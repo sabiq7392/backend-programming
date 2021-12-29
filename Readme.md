@@ -5,6 +5,10 @@
     <p>Record College Task</p>
   </header>
   <section>
+    <h2 style="color: red;">DONT DO PLAGIARIZE</h2>
+    <p>text me if you wanna learn together</p>
+  </section>
+  <section>
     <h2>Teknologi</h2>
     <ul>
       <li>JavaScript</li>
