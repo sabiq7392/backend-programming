@@ -8,4 +8,4 @@
   <li>TypeScript</li>
 </ul>
 
-<img src="https://ichi.pro/assets/images/max/724/1*KE6gJxbsyceORBoJkDZ0bw.png" alt="Express Framework">
+<img src="https://media.vlpt.us/images/filoscoder/post/a301afb3-f5fc-44da-8ae9-42b844c47c97/typescript-express-nodejs.jpg" alt="Express Framework">
