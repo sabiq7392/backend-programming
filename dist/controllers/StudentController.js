@@ -35,7 +35,7 @@ class StudentController {
         return __awaiter(this, void 0, void 0, function* () {
             const id = Number(req.params.id);
             const student = yield Student_1.default.find(id);
-            if (student === 1) {
+            if (student === 0) {
                 return ResponseJson_1.default.fail(res, {
                     status: 404,
                     message: `Student not found. ID: ${id}`,

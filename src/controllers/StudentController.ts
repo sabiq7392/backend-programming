@@ -25,7 +25,7 @@ export default class StudentController {
     const id = Number(req.params.id);
     const student = await Student.find(id);
 
-    if (student === 1) {
+    if (student === 0) {
       return ResponseJson.fail(res, {
         status: 404,
         message: `Student not found. ID: ${id}`,
