@@ -24,6 +24,7 @@
 		"import/no-unresolved": "off",
 		"import/no-mutable-exports": "off",
 		"lines-between-class-members": "warn",
+		"linebreak-style": "off",
 		"max-classes-per-file": "off",
 		"no-empty": "warn",
 		"no-restricted-syntax": "off",
