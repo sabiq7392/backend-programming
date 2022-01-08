@@ -1,15 +1,15 @@
 import { Response } from 'express';
-import { TypeDataJson } from './Interface';
+import { TypeDataJson } from './Interfaces';
 
 export default class ResponseJson {
-  public static success<T>(res: Response, dataJson: TypeDataJson<T>): void {
+  public static success(res: Response, dataJson: TypeDataJson): void {
     const { status, message, data } = dataJson;
     res
       .status(status)
       .json({ status, message, data });
   }
 
-  public static fail(res: Response, dataJson: TypeDataJson<any>): void {
+  public static fail(res: Response, dataJson: TypeDataJson): void {
     const { status, message, data } = dataJson;
     res
       .status(status)

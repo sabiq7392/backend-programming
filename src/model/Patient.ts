@@ -2,5 +2,5 @@
 import Model from './Model';
 
 export default class Student extends Model {
-  static table = 'students';
+  public static table = 'patients';
 }

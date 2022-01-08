@@ -1,18 +1,19 @@
 import express, { Request, Response } from 'express';
-import StudentController from '../controllers/StudentController';
+import { body, validationResult } from 'express-validator';
+import PatientController from '../controllers/PatientController';
 
 const router = express.Router();
 
 router.route('/')
-  .get((req: Request, res: Response) => res.send('Students API - Author Sabiq'));
+  .get((req: Request, res: Response) => res.send('Covid Patients API - Author Sabiq'));
 
-router.route('/students')
-  .get(StudentController.index)
-  .post(StudentController.store);
+router.route('/patients')
+  .get(PatientController.index)
+  .post(body('phone').isLength({ min: 7 }), PatientController.store);
 
-router.route('/students/:id')
-  .put(StudentController.update)
-  .delete(StudentController.destroy)
-  .get(StudentController.show);
+router.route('/patients/:id')
+  .get(PatientController.show)
+  .delete(PatientController.destroy)
+  .put(PatientController.update);
 
 export default router;
