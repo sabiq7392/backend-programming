@@ -1,22 +1,21 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import ResponseJson from '../utils/ResponseJson';
+import { responseSuccessfully, responseFailed } from '../utils/ResponseJson';
 import Patient from '../model/Patient';
 
-//  BELOM BUAT VALIDASI
 export default class PatientController {
   public static async index(req: Request, res: Response) {
     const patients = await Patient.all();
 
     if (patients.length !== 0) {
-      return ResponseJson.success(res, {
+      return responseSuccessfully(res, {
         status: 200,
         message: 'Show All Patients',
         data: patients,
       });
     }
 
-    return ResponseJson.fail(res, {
+    return responseFailed(res, {
       status: 404,
       message: 'Student is empty',
     });
@@ -27,14 +26,14 @@ export default class PatientController {
     const patient = await Patient.find(id);
 
     if (patient) {
-      return ResponseJson.success(res, {
+      return responseSuccessfully(res, {
         status: 200,
         message: `Get detail patient. id: ${id}`,
         data: patient,
       });
     }
 
-    return ResponseJson.fail(res, {
+    return responseFailed(res, {
       status: 404,
       message: `Student not found. id: ${id}`,
     });
@@ -44,18 +43,21 @@ export default class PatientController {
     const { name, phone, address, status, in_date_at, out_date_at } = req.body;
 
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    if (errors.isEmpty()) {
+      const patient = await Patient.create({
+        name, phone, address, status, in_date_at, out_date_at,
+      });
+
+      return responseSuccessfully(res, {
+        status: 201,
+        message: 'Patient is added successfully',
+        data: patient,
+      });
     }
 
-    const patient = await Patient.create({
-      name, phone, address, status, in_date_at, out_date_at,
-    });
-
-    return ResponseJson.success(res, {
-      status: 201,
-      message: 'Patient is added successfully',
-      data: patient,
+    return responseFailed(res, {
+      status: 404,
+      errors: errors.array(),
     });
   }
 

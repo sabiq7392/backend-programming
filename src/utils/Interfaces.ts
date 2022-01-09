@@ -17,10 +17,11 @@ export interface TypeDataAction {
   // timestamp: string, !don't declare!
 }
 
-export interface TypeDataJson {
+export interface DataJson {
   status: number,
-  message: string,
+  message?: string | undefined,
   data?: GetResult | PostResult,
+  errors?: any,
 }
 
 // ================================

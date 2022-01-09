@@ -28,6 +28,7 @@
 		"linebreak-style": "off",
 		"max-classes-per-file": "off",
 		"max-len": "warn",
+		"newline-per-chained-call": "off",
 		"no-empty": "warn",
 		"no-empty-function": "warn",
 		"no-restricted-syntax": "off",

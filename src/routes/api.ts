@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import { body, validationResult } from 'express-validator';
 import PatientController from '../controllers/PatientController';
+import ValidatePost from '../middleware/Validate';
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.route('/')
 
 router.route('/patients')
   .get(PatientController.index)
-  .post(body('phone').isLength({ min: 7 }), PatientController.store);
+  .post(ValidatePost, PatientController.store);
 
 router.route('/patients/:id')
   .get(PatientController.show)
