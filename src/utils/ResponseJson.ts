@@ -1,33 +1,31 @@
 import { Response } from 'express';
-import { DataJson } from './Interfaces';
+import { DataJson } from '../config/ResultInterfaces';
 
-// export default class ResponseJson {
-//   public static success(res: Response, dataJson: DataJson): void {
-//     const { status, message, data } = dataJson;
-//     res
-//       .status(status)
-//       .json({ status, message, data });
-//   }
+/**
+ * !important
+ *
+ * this response specially for controllers method to get the result
+ * where is failed or successfully
+ *
+ * @param res first thing to do is to declare this so your response is Running
+ * @param dataJson what result you can get, you set the result in utils/Interfaces.ts
+ *
+ * @returns the return is your important data should send
+ *  dont forget to return to in conttrollers method
+ */
 
-//   public static fail(res: Response, dataJson: DataJson): void {
-//     const { status, message, data } = dataJson;
-//     res
-//       .status(status)
-//       .json({ status, message, data });
-//   }
-// }
 export const responseSuccessfully = (res: Response, dataJson: DataJson):
 Response<any, Record<string, any>> => {
-  const { status, message, data } = dataJson;
+  const { status } = dataJson;
   return res
     .status(status)
-    .json({ status, message, data });
+    .json(dataJson);
 };
 
 export const responseFailed = (res: Response, dataJson: DataJson):
 Response<any, Record<string, any>> => {
-  const { status, message, data, errors } = dataJson;
+  const { status } = dataJson;
   return res
     .status(status)
-    .json({ status, message, data, errors });
+    .json(dataJson);
 };

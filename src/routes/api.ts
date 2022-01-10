@@ -1,19 +1,38 @@
 import express, { Request, Response } from 'express';
-import PatientController from '../controllers/PatientController';
-import ValidatePost from '../middleware/Validate';
+import { patientController, PatientController } from '../controllers/PatientController';
+import { ValidatePost, ValidatePut } from '../middleware/Validate';
 
-const router = express.Router();
+const Router = express.Router();
 
-router.route('/')
+Router.route('/')
   .get((req: Request, res: Response) => res.send('Covid Patients API - Author Sabiq'));
 
-router.route('/patients')
-  .get(PatientController.index)
-  .post(ValidatePost, PatientController.store);
+Router.route('/patients')
+  .get(patientController.index)
+  .post(ValidatePost, patientController.store);
 
-router.route('/patients/:id')
-  .get(PatientController.show)
-  .delete(PatientController.destroy)
-  .put(PatientController.update);
+Router.route('/patients/:id')
+  .get((req: Request, res: Response) => patientController.show(req, res))
+  .put(ValidatePut, patientController.update)
+  .delete(patientController.destroy);
 
-export default router;
+// ======================================================
+
+/**
+ * Binding, cause in that public method there is an access to the private method
+ */
+Router.route('/patients/search/:name')
+  .get((req: Request, res: Response) => patientController.searchByName(req, res));
+
+Router.route('/patients/status/:status')
+  .get((req: Request, res: Response) => patientController.searchByStatus(req, res));
+
+// Router.route('/patients/status/recovered')
+//   .get((req: Request, res: Response) => patientController.recovered(req, res));
+
+// Router.route('/patients/status/dead')
+//   .get((req: Request, res: Response) => patientController.dead(req, res));
+
+// ======================================================
+
+export default Router;

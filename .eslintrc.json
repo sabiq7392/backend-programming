@@ -39,6 +39,7 @@
 		"no-console": "off",
 		"object-curly-newline": "off",
 		"padded-blocks": "warn",
-		"quotes": "warn"
+		"quotes": "warn",
+		"space-before-blocks": "warn"
 	}
 }

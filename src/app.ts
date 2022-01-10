@@ -1,5 +1,5 @@
 import express, { Application } from 'express';
-import router from './routes/api';
+import Router from './routes/api';
 
 require('dotenv').config();
 
@@ -10,4 +10,4 @@ const app: Application = express();
 app.listen(APP_PORT || 3000, () => console.log(`Server running in ${BASE_URL}:${APP_PORT}`));
 
 app.use(express.json());
-app.use(router);
+app.use(Router);

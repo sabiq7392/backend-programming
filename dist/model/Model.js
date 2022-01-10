@@ -6,50 +6,64 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../config/database"));
 class Model {
     static all() {
-        return this._selectData(`SELECT * FROM ${this.table}`);
+        return this._select(`SELECT * FROM ${this.table}`);
     }
-    static find(id) {
-        return this._selectData(`SELECT * FROM ${this.table} WHERE id = ${id}`);
+    static find(data) {
+        const key = Object.keys(data);
+        const value = Object.values(data);
+        return this._select(`SELECT * FROM ${this.table} WHERE ${key} = "${value}"`);
     }
+    // public static _find(name: string) {
+    //   return new Promise((resolve, reject) => {
+    //     const sql: string = `SELECT * FROM ${this.table} WHERE name = '${name}'`;
+    //     db.query(sql, (err, result: GetResult) => {
+    //       if (err) reject(err);
+    //       if (result) resolve(result);
+    //     });
+    //   });
+    // }
     static create(data) {
         return new Promise((resolve, reject) => {
-            database_1.default.query({
-                sql: `INSERT INTO ${this.table} SET ?`,
-                values: data,
-            }, (err, result) => {
-                console.log(`Last inserted ID: ${result.insertId}`);
-                return err ? reject(err) : resolve(result);
+            const sql = `INSERT INTO ${this.table} SET ?`;
+            database_1.default.query(sql, data, (err, result) => {
+                if (err)
+                    reject(err);
+                if (result)
+                    resolve(this.find({ data: result.insertId }));
             });
         });
     }
     static update(id, data) {
         return new Promise((resolve, reject) => {
-            const dataInfo = Object.entries(data);
-            for (const [key, value] of dataInfo) {
-                database_1.default.query({
-                    sql: `UPDATE ${this.table} SET ${key} = ? WHERE id = ?`,
-                    values: [value, id],
-                }, (err, result) => (err ? reject(err) : resolve(result.affectedRows)));
-            }
+            const sql = `UPDATE ${this.table} SET ? WHERE id = ?`;
+            database_1.default.query(sql, [data, id], (err, result) => {
+                if (err)
+                    reject(err);
+                if (result)
+                    resolve(this.find({ id }));
+            });
         });
     }
     static delete(id) {
         return new Promise((resolve, reject) => {
-            database_1.default.query({
-                sql: `DELETE FROM ${this.table} WHERE id = ?`,
-                values: id,
-            }, (err, result) => (err ? reject(err) : resolve(result.affectedRows)));
+            const sql = `DELETE FROM ${this.table} WHERE id = ${id}`;
+            database_1.default.query(sql, (err, result) => {
+                if (err)
+                    reject(err);
+                if (result)
+                    resolve(result);
+            });
         });
     }
-    static _selectData(sql) {
+    static _select(sql) {
         return new Promise((resolve, reject) => {
             database_1.default.query(sql, (err, result) => {
                 if (err)
                     reject(err);
-                if (result.length === 0) {
+                if (result.length === 0)
                     resolve(result.length);
-                }
-                resolve(result);
+                if (result)
+                    resolve(result);
             });
         });
     }

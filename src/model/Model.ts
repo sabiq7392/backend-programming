@@ -1,7 +1,22 @@
-import { OkPacket, QueryError } from 'mysql';
-import { TypeDataAction } from '../utils/Interfaces';
+import { DataAction } from '../config/ResultInterfaces';
 import db from '../config/database';
-import { GetResult, PostResult } from '../utils/Types';
+import { GetResult, PostResult } from '../config/PromiseType';
+
+/**
+ * !Important extend this to your Custom Model
+ * dont change this unless you wanna touch more
+ *
+ * if you extend this model to your Custom Model
+ * you can call ex: Patient.all()
+ */
+
+/**
+ * For method find
+ * you can use too for params in your other method
+ */
+export interface Find {
+  [key: string]: string | number;
+}
 
 export default class Model {
   public static table: string;
@@ -10,55 +25,52 @@ export default class Model {
     return this._select(`SELECT * FROM ${this.table}`);
   }
 
-  public static find(id: number) {
-    return this._select(`SELECT * FROM ${this.table} WHERE id = ${id}`);
+  public static find(data: Find) {
+    const key = Object.keys(data);
+    const value = Object.values(data);
+
+    return this._select(`SELECT * FROM ${this.table} WHERE ${key} = "${value}"`);
   }
 
-  public static create(data: any): Promise<PostResult> {
+  public static create(data: DataAction): Promise<PostResult | GetResult> {
     return new Promise((resolve, reject) => {
       const sql: string = `INSERT INTO ${this.table} SET ?`;
+
       db.query(sql, data, (err, result: PostResult) => {
         if (err) reject(err);
-        console.log(`Last inserted ID: ${result.insertId}`);
-        resolve(result);
+        if (result) resolve(this.find({ data: result.insertId }));
       });
     });
   }
 
-  public static update(id: number, data: TypeDataAction): Promise<unknown> {
+  public static update(id: number, data: DataAction): Promise<PostResult | GetResult> {
     return new Promise((resolve, reject) => {
-      const dataInfo = Object.entries(data);
+      const sql: string = `UPDATE ${this.table} SET ? WHERE id = ?`;
 
-      for (const [key, value] of dataInfo) {
-        db.query(
-          {
-            sql: `UPDATE ${this.table} SET ${key} = ? WHERE id = ?`,
-            values: [value, id],
-          },
-          (err: QueryError, result: OkPacket) => (err ? reject(err) : resolve(result.affectedRows)),
-        );
-      }
+      db.query(sql, [data, id], (err, result) => {
+        if (err) reject(err);
+        if (result) resolve(this.find({ id }));
+      });
     });
   }
 
-  public static delete(id: number): Promise<unknown> {
+  public static delete(id: number) {
     return new Promise((resolve, reject) => {
-      db.query(
-        {
-          sql: `DELETE FROM ${this.table} WHERE id = ?`,
-          values: id,
-        },
-        (err: QueryError, result: OkPacket) => (err ? reject(err) : resolve(result.affectedRows)),
-      );
+      const sql: string = `DELETE FROM ${this.table} WHERE id = ${id}`;
+
+      db.query(sql, (err, result: PostResult) => {
+        if (err) reject(err);
+        if (result) resolve(result);
+      });
     });
   }
 
-  private static _select(sql: string): Promise<GetResult> {
+  protected static _select(sql: string): Promise<GetResult> {
     return new Promise((resolve, reject) => {
-      db.query(sql, (err: QueryError, result: GetResult) => {
+      db.query(sql, (err, result: GetResult) => {
         if (err) reject(err);
         if (result.length === 0) resolve(result.length);
-        resolve(result);
+        if (result) resolve(result);
       });
     });
   }
