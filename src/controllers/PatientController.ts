@@ -1,25 +1,39 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import Patient from '../model/Patient';
 import { responseSuccessfully, responseFailed } from '../utils/ResponseJson';
-import { GetResult } from '../config/PromiseType';
+import { GetResult } from '../config/ResultTypes';
 import { Find } from '../model/Model';
+import Patient from '../model/Patient';
 import CrudController from './CrudController';
 
 class PatientController extends CrudController {
+  constructor() {
+    super();
+    /**
+     * @binding cause in that method there is an access to @this method
+     */
+    this.searchByName = this.searchByName.bind(this);
+    this.searchByStatus = this.searchByStatus.bind(this);
+    this.show = this.show.bind(this);
+  }
+
   public async index(req: Request, res: Response) {
     const patients: GetResult = await Patient.all();
 
-    if (patients.length <= 0) {
-      return responseFailed(res, {
-        status: 404,
+    if (!patients) {
+      return responseSuccessfully(res, {
+        status: 200,
+        isSuccess: true,
         message: 'Patient is empty',
+        data: patients,
       });
     }
 
     return responseSuccessfully(res, {
       status: 200,
+      isSuccess: true,
       message: 'Show All Patients',
+      total: patients.length,
       data: patients,
     });
   }
@@ -33,7 +47,8 @@ class PatientController extends CrudController {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return responseFailed(res, {
-        status: 400,
+        status: 422,
+        isSuccess: false,
         errors: errors.array(),
       });
     }
@@ -41,6 +56,7 @@ class PatientController extends CrudController {
     const patient = await Patient.create(req.body);
     return responseSuccessfully(res, {
       status: 201,
+      isSuccess: true,
       message: 'Patient is added successfully',
       data: patient,
     });
@@ -53,6 +69,7 @@ class PatientController extends CrudController {
     if (!findPatient) {
       return responseFailed(res, {
         status: 404,
+        isSuccess: false,
         message: `Patient not found: ID: ${id}`,
       });
     }
@@ -61,6 +78,7 @@ class PatientController extends CrudController {
     if (!errors.isEmpty()) {
       return responseFailed(res, {
         status: 400,
+        isSuccess: false,
         errors: errors.array(),
       });
     }
@@ -68,7 +86,8 @@ class PatientController extends CrudController {
     const patient = await Patient.update(id, req.body);
     return responseSuccessfully(res, {
       status: 200,
-      message: `Patients is update successfully. id: ${id}`,
+      isSuccess: true,
+      message: `Patients has been update successfully. id: ${id}`,
       data: patient,
     });
   }
@@ -80,6 +99,7 @@ class PatientController extends CrudController {
     if (!findPatient) {
       return responseFailed(res, {
         status: 404,
+        isSuccess: false,
         message: `Patient not found: ID: ${id}`,
       });
     }
@@ -87,7 +107,8 @@ class PatientController extends CrudController {
     const patient = await Patient.delete(id);
     return responseSuccessfully(res, {
       status: 200,
-      message: `Patiens is delete successfully: ID: ${id}`,
+      isSuccess: true,
+      message: `Patiens has been deleted successfully: ID: ${id}`,
       data: patient,
     });
   }
@@ -102,21 +123,24 @@ class PatientController extends CrudController {
     return this._searchBy(res, { status });
   }
 
-  private async _searchBy(res: Response, param: Find) {
-    const key = Object.keys(param)[0];
-    const value = Object.values(param)[0];
+  private async _searchBy(res: Response, find: Find) {
+    const key = Object.keys(find)[0];
+    const value = Object.values(find)[0];
 
-    const patient = await Patient.find(param);
+    const patient = await Patient.find(find);
     if (!patient) {
       return responseFailed(res, {
         status: 404,
-        message: `Patient is not found: ${key.toUpperCase()} = ${value}`,
+        isSuccess: false,
+        message: `Patient not found: ${key.toUpperCase()} = ${value}`,
       });
     }
 
     return responseSuccessfully(res, {
       status: 200,
-      message: `Show all patients with ${key.toUpperCase()} = ${value}`,
+      isSuccess: true,
+      message: `Patients found ${key.toUpperCase()} = ${value}`,
+      total: patient.length,
       data: patient,
     });
   }
@@ -124,7 +148,4 @@ class PatientController extends CrudController {
 
 const patientController = new PatientController();
 
-export {
-  patientController,
-  PatientController,
-};
+export default patientController;

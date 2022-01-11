@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Request, Response } from 'express';
-import { CrudResult } from '../config/PromiseType';
+import { CrudResult } from '../config/ResultTypes';
 
 export default abstract class CrudController {
   public abstract index(req: Request, res: Response): CrudResult;

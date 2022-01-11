@@ -1,20 +1,29 @@
 import { RowDataPacket, OkPacket, ResultSetHeader } from 'mysql';
 import { Response } from 'express';
 /**
- * Important
- * Type for Promise Result.
+ * @IMPORTANT
+ * Type for Result.
  *
- * should declare what type is promise, so you can edit or
+ * @should declare what type is "promise", so you can edit or
  * manipulation the result in controllers
  */
 
-// ======= for Model
+// ====== for Generic
 export type GetResult = (
   RowDataPacket | RowDataPacket[] | RowDataPacket[][]
 );
 
 export type PostResult = (
   ResultSetHeader | OkPacket
+);
+
+// ======= for Promise
+export type PromiseGet = (
+  Promise<GetResult>
+);
+
+export type PromisePost = (
+  Promise<PostResult | GetResult>
 );
 
 // ======= for Controller
