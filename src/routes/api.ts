@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import authController from '../controllers/AuthController';
 import patientController from '../controllers/PatientController';
 import { ValidatePost, ValidatePut } from '../middleware/Validate';
 
@@ -7,6 +8,14 @@ const Router = express.Router();
 Router.route('/')
   .get((req: Request, res: Response) => res.send('Covid Patients API - Author Sabiq'));
 
+// Authentication
+Router.route('/auth/register')
+  .post(authController.register);
+
+Router.route('/auth/login')
+  .post(authController.login);
+
+// Patients
 Router.route('/patients')
   .get(patientController.index)
   .post(ValidatePost, patientController.store);

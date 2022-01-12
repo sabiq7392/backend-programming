@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { responseSuccessfully, responseFailed } from '../utils/ResponseJson';
+import { responseSuccessfully, responseFailed, responseCatchError } from '../utils/ResponseJson';
 import { GetResult } from '../config/ResultTypes';
 import { Find } from '../model/Model';
 import Patient from '../model/Patient';
 import CrudController from './CrudController';
+import { json } from 'stream/consumers';
 
 class PatientController extends CrudController {
   constructor() {
@@ -18,24 +19,29 @@ class PatientController extends CrudController {
   }
 
   public async index(req: Request, res: Response) {
-    const patients: GetResult = await Patient.all();
+    try {
+      const patients: GetResult = await Patient.all();
 
-    if (!patients) {
+      if (!patients) {
+        return responseSuccessfully(res, {
+          status: 200,
+          isSuccess: true,
+          message: 'Patient is empty',
+          data: patients,
+        });
+      }
+
       return responseSuccessfully(res, {
         status: 200,
         isSuccess: true,
-        message: 'Patient is empty',
+        message: 'Show All Patients',
+        total: patients.length,
         data: patients,
       });
+    } catch (err) {
+      console.error(err);
+      return responseCatchError(res, { isSuccess: false, errors: err });
     }
-
-    return responseSuccessfully(res, {
-      status: 200,
-      isSuccess: true,
-      message: 'Show All Patients',
-      total: patients.length,
-      data: patients,
-    });
   }
 
   public async show(req: Request, res: Response) {
@@ -123,6 +129,15 @@ class PatientController extends CrudController {
     return this._searchBy(res, { status });
   }
 
+  /**
+   *
+   * @desc
+   * @param res make Response to express
+   * @param find send data to find in database based on "key as name of column "
+   * and "value as value of column"
+   * @example acccess to your other method, "return this_searchBy(res, { id: 1 })"
+   * @returns status, isSuccess, message, total, searched data
+   */
   private async _searchBy(res: Response, find: Find) {
     const key = Object.keys(find)[0];
     const value = Object.values(find)[0];

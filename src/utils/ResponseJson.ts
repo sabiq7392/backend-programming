@@ -25,6 +25,11 @@ interface DataFail {
   errors?: any,
 }
 
+interface CatchError {
+  isSuccess: boolean,
+  errors: any,
+}
+
 /**
  * !IMPORTANT
  *
@@ -52,4 +57,10 @@ Response<any, Record<string, any>> => {
   return res
     .status(status)
     .json({ isSuccess, message, errors });
+};
+
+export const responseCatchError = (res: Response, _catch: CatchError) => {
+  const { isSuccess, errors } = _catch;
+  return res
+    .json({ isSuccess, errors });
 };

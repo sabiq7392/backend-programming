@@ -1,16 +1,17 @@
-import DataWillSent from '../config/DataWillSentInterfaces';
-import { GetResult, PostResult, PromiseGet, PromisePost } from '../config/ResultTypes';
+/* eslint-disable max-len */
+import { AuthDataWillSent, MainDataWillSent } from '../config/DataWillSentInterfaces';
+import { GetOne, GetResult, PostResult, PromiseGet, PromiseGetOne, PromisePost } from '../config/ResultTypes';
 import db from '../config/database';
 
 /**
  *
  * @IMPORTANT
- * @desc extend this to your Custom Model
+ * @should extend this to your Custom Model
  * dont change this unless you wanna touch more
  *
- * if you extend this model to your Custom Model
+ * if you extend this model and set property of table to your Custom Model
  * you can call anywhere,
- * @example await Patient.all()
+ * @example await Patient.all(), etc
  */
 
 /**
@@ -19,7 +20,16 @@ import db from '../config/database';
  * you can use too for params in your other method
  */
 export interface Find {
-  [key: string]: string | number;
+  [key: string]: any;
+}
+
+/**
+ * @desc for method _query
+ */
+interface Query {
+  sql: string,
+  values?: any,
+  callback: Function,
 }
 
 export default class Model {
@@ -39,92 +49,104 @@ export default class Model {
    * @example call in controllers "await Patient.all()"
    * @returns data in database, truthy & falsy condition, and errors
    */
-  public static all() {
-    return this._select(`SELECT * FROM ${this.table}`);
+  public static all(): PromiseGet {
+    return this._query({
+      sql: `SELECT * FROM ${this.table}`,
+      callback: (results: GetResult) => results,
+    });
   }
 
   /**
    *
-   * @desc for search all data in database based by your "key" and "value" ,
+   * @desc search "all data" in database based by your "key" and "value" ,
    * @param data send as request
-   * @example call in controllers "await Patient.find(res, { nama: 'Sabiq' }")
-   * @returns data in database, "truthy" & "falsy" condition, and errors
+   * @example call in controllers "await Patient.find({ nama: 'Sabiq' })
+   * @returns all data in database, "truthy" & "falsy" condition, and errors
    */
-  public static find(data: Find) {
+  public static find(data: Find): PromiseGet {
     const key = Object.keys(data)[0];
     const value = Object.values(data)[0];
 
-    if (typeof value === 'string') {
-      return this._select(`SELECT * FROM ${this.table} WHERE ${key} = "${value}"`);
-    }
-    return this._select(`SELECT * FROM ${this.table} WHERE ${key} = ${value}`);
+    return this._query({
+      sql: `SELECT * FROM ${this.table} WHERE ${key} = ${`"${value}"` || value}`,
+      callback: (results: GetResult) => results,
+    });
   }
 
   /**
    *
-   * @desc for create data in database based by request
+   * @desc search "one data" in database based by your "key" and "value"
+   * @param data send as request
+   * @example call in controllers "or await Patient.findOne({ id: 1 })"
+   * @returns one data, "truthy" & "falsy" condition, and errors
+   */
+  public static findOne(data: Find): PromiseGetOne {
+    const key = Object.keys(data)[0];
+    const value = Object.values(data)[0];
+
+    return this._query({
+      sql: `SELECT * FROM ${this.table} WHERE ${key} = ${`"${value}"` || value}`,
+      callback: (result: GetOne) => result[0],
+    });
+  }
+
+  /**
+   *
+   * @desc create data in database based by request
    * @param data send as request
    * @example call in controllers "await Patient.create(req.body)"
+   * with custom type parameter "await Patient.create<DataPayment>(req.body)"
    * @returns last created data and erorrs
    */
-  public static create(data: DataWillSent): PromisePost {
-    return new Promise((resolve, reject) => {
-      const sql: string = `INSERT INTO ${this.table} SET ?`;
-
-      db.query(sql, data, (err, result: PostResult) => {
-        if (err) reject(err);
-        if (result) resolve(this.find({ id: result.insertId }));
-      });
+  public static create<T>(data: MainDataWillSent | AuthDataWillSent | T): PromisePost {
+    // sql, data, (result: PostResult) => this.find({ id: result.insertId })
+    return this._query({
+      sql: `INSERT INTO ${this.table} SET ?`,
+      values: data,
+      callback: (result: PostResult) => this.find({ id: result.insertId }),
     });
   }
 
   /**
    *
-   * @desc
-   * @param id is data id
+   * @desc update data in database wheter it send partials or all
+   * @param id data id
    * @param data send as request
    * @example call it in controllers "await Patient.update(id, req.body)"
-   * @returns
+   * with custom type parameter "await Patient.update<DataPayment>(id, req.body)"
+   * @returns last updated data and errors
    */
-  public static update(id: number, data: DataWillSent): PromisePost {
-    return new Promise((resolve, reject) => {
-      const sql: string = `UPDATE ${this.table} SET ? WHERE id = ?`;
-
-      db.query(sql, [data, id], (err, result) => {
-        if (err) reject(err);
-        if (result) resolve(this.find({ id }));
-      });
+  public static update<T>(id: number, data: MainDataWillSent | AuthDataWillSent | T): PromisePost {
+    return this._query({
+      sql: `UPDATE ${this.table} SET ? WHERE id = ?`,
+      values: [data, id],
+      // eslint-disable-next-line no-unused-vars
+      callback: (result: PostResult) => this.findOne({ id }),
     });
   }
 
   /**
    *
-   * @desc
+   * @desc delete data in database
    * @param id is data id
    * @param data send as request
    * @example call in controllers "await Patient.delete(id)"
-   * @returns
+   * @returns information about rows in database and errors
    */
-  public static delete(id: number) {
-    return new Promise((resolve, reject) => {
-      const sql: string = `DELETE FROM ${this.table} WHERE id = ${id}`;
-
-      db.query(sql, (err, result: PostResult) => {
-        if (err) reject(err);
-        if (result) resolve(result);
-      });
+  public static delete(id: number): PromisePost {
+    return this._query({
+      sql: `DELETE FROM ${this.table} WHERE id = ${id}`,
+      callback: (results: PostResult) => results,
     });
   }
 
   /**
    *
-   * @desc get the result by SELECT data
-   * you can reuse it if you build another method to "SELECT" data
+   * @desc shortcut for promise and db.query it make less redundant code
+   * @condition Why there is a condition result.length || 0?
    *
    * @dont delete the "result.length", this make you get the condition or length,
    * whether is true, false, or number.
-   *
-   * @condition Why there is a condition result.length || 0?
    *
    * because without 0 you can't use operator "!" to make condition falsy
    * you have to do, ex: "patient.length === 0" to get falsy
@@ -134,12 +156,17 @@ export default class Model {
    * @example call in this class "this._select('SELECT * FROM table WHERE ...')"
    * @returns data in database, "truthy" & "falsy" condition, and errors
    */
-  private static _select(sql: string): PromiseGet {
+  private static _query(query: Query): Promise<any> {
+    const { sql, values, callback } = query;
+
     return new Promise((resolve, reject) => {
-      db.query(sql, (err, result: GetResult) => {
+      db.query(sql, values, (err, results: any) => {
         if (err) reject(err);
-        if (result.length === 0) resolve(result.length || 0);
-        if (result) resolve(result);
+
+        const notFound = results.length === 0;
+        if (notFound) resolve(results.length || 0);
+
+        if (results && callback) resolve(callback(results));
       });
     });
   }

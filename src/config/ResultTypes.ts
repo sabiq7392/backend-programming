@@ -13,11 +13,13 @@ export type GetResult = (
   RowDataPacket | RowDataPacket[] | RowDataPacket[][]
 );
 
+export type GetOne = RowDataPacket;
+
 export type PostResult = (
   ResultSetHeader | OkPacket
 );
 
-// ======= for Promise
+// ======= for Promises
 export type PromiseGet = (
   Promise<GetResult>
 );
@@ -26,7 +28,11 @@ export type PromisePost = (
   Promise<PostResult | GetResult>
 );
 
-// ======= for Controller
+export type PromiseGetOne = (
+  Promise<RowDataPacket>
+);
+
+// ======= for Controllers
 export type CrudResult = (
   Promise<Response<any, Record<string, any>>>
 );

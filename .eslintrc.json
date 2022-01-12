@@ -13,33 +13,24 @@
 		"sourceType": "module"
 	},
 	"plugins": [
-		"@typescript-eslint"
+		"@typescript-eslint",
+		"only-warn"
 	],
 	"ignorePatterns": "./dist/*.js",
 	"rules": {
 		"arrow-body-style": "off",
 		"camelcase": "off",
 		"class-methods-use-this": "off",
-		"consistent-return": "warn",
 		"import/extensions": "off",
 		"import/no-unresolved": "off",
 		"import/no-mutable-exports": "off",
-		"lines-between-class-members": "warn",
 		"linebreak-style": "off",
 		"max-classes-per-file": "off",
-		"max-len": "warn",
 		"newline-per-chained-call": "off",
-		"no-empty": "warn",
-		"no-empty-function": "warn",
 		"no-restricted-syntax": "off",
-		"no-trailing-spaces": "warn",
 		"no-underscore-dangle": "off",
-		"no-unused-vars": "warn",
 		"no-useless-return": "off",
 		"no-console": "off",
-		"object-curly-newline": "off",
-		"padded-blocks": "warn",
-		"quotes": "warn",
-		"space-before-blocks": "warn"
+		"object-curly-newline": "off"
 	}
 }

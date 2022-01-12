@@ -6,9 +6,16 @@
  *
  * your response is here, is the data you send/manipulate for CRUD
  * the key and type based by your colum in database
+ *
+ * you can create another interface if there are different data to send
  */
 
-export default interface DataWillSent {
+export interface AuthDataWillSent {
+  username: string,
+  password: string,
+}
+
+export interface MainDataWillSent {
   // id: number, don't declare just keep in comment! unless you want it
   name: string,
   phone: string,
