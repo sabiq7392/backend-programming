@@ -13,7 +13,7 @@
     <ul>
       <li>JavaScript</li>
       <li>TypeScript</li>
-      <li>MySQl</li>
+      <li>MySQL</li>
       <li>NodeJS</li>
       <li>Express</li>
     </ul>
