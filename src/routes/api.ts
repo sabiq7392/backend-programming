@@ -1,10 +1,9 @@
 import express, { Request, Response } from 'express';
-import { validateAuth, validatePost, validatePut } from '../middleware/Validate';
+import { validateAuth, validatePost, validatePut } from '../middleware/validate';
 import Token from '../middleware/VerifyToken';
 import authController from '../controllers/AuthController';
 import patientController from '../controllers/PatientController';
 import userController from '../controllers/UserController';
-import db from '../config/database';
 
 const Router = express.Router();
 
@@ -52,12 +51,4 @@ Router.route('/patients/search/:name')
 Router.route('/patients/status/:status')
   .get(Token.verifiy, patientController.searchByStatus);
 
-/**
- * @truncate
- */
-
-// Router.route('/truncate')
-//   .get((req: Request, res: Response) => {
-
-//   });
 export default Router;

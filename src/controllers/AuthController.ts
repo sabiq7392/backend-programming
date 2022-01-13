@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../model/User';
-import { ResponseFailed, ResponseSuccessfully, ResponseCatchError } from '../utils/ResponseJson';
+import ResponseJson, { ResponseFailed, ResponseSuccessfully } from '../utils/ResponseJson';
 
 require('dotenv').config();
 
@@ -47,13 +47,13 @@ class AuthController {
       }
 
       /** @token is action to build token for accesing and manipulate database */
-      process.env.TOKEN_SECRET = new Date(10000000).toString();
+      const { TOKEN_SECRET, TOKEN_EXPIRES_IN } = process.env;
+
       const token = jwt.sign(
         { _username: user.username },
-        process.env.TOKEN_SECRET,
-        // { expiresIn: '1h' },
+        TOKEN_SECRET as string,
+        { expiresIn: TOKEN_EXPIRES_IN as string },
       );
-
       return res
         .header('auth-token', token)
         .status(200)
@@ -63,13 +63,7 @@ class AuthController {
         });
 
     } catch (err) {
-      console.log(err);
-      return res
-        .status(400)
-        .json(<ResponseCatchError>{
-          isSuccess: false,
-          errors: `Unexpected ${err}`,
-        });
+      return ResponseJson.catchError(res, err);
     }
   }
 
@@ -101,13 +95,7 @@ class AuthController {
         });
 
     } catch (err) {
-      console.error(err);
-      return res
-        .status(400)
-        .json(<ResponseCatchError>{
-          isSuccess: false,
-          errors: `Unexpected Errors: ${err}`,
-        });
+      return ResponseJson.catchError(res, err);
     }
   }
 }

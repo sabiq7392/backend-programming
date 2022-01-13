@@ -10,14 +10,6 @@ import { GetResult, PostResult } from '../config/ResultTypes';
  * @errors use to get error result when data is failed whether is CRUD or NO
  */
 
-export interface DataSuccess {
-  status: number,
-  isSuccess: true,
-  message: string,
-  total?: number,
-  data?: GetResult | PostResult,
-}
-
 export interface ResponseSuccessfully {
   isSuccess: true,
   message: string,
@@ -25,22 +17,10 @@ export interface ResponseSuccessfully {
   data?: GetResult | PostResult,
 }
 
-export interface DataFail {
-  status: number,
-  isSuccess: false,
-  message?: string,
-  errors?: any,
-}
-
 export interface ResponseFailed {
   isSuccess: false,
   message: string,
   errors?: any,
-}
-
-export interface CatchError {
-  isSuccess: false,
-  errors: any,
 }
 
 export interface ResponseCatchError {
@@ -69,21 +49,8 @@ export interface ResponseCatchError {
  */
 
 export default class ResponseJson {
-  public static successfully(res: Response, dataJson: DataSuccess) {
-    const { status, message, total, data } = dataJson;
-    return res
-      .status(status)
-      .json({ isSuccess: true, message, total, data });
-  }
-
-  public static failed(res: Response, dataJson: DataFail) {
-    const { status, message, errors } = dataJson;
-    return res
-      .status(status)
-      .json({ isSuccess: false, message, errors });
-  }
-
   public static catchError(res: Response, err: any) {
+    console.log(err);
     return res
       .status(400)
       .json(<ResponseCatchError>{

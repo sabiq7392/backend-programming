@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import ResponseJson, { ResponseSuccessfully, ResponseFailed } from '../utils/ResponseJson';
-import { GetResult } from '../config/ResultTypes';
 import { Find } from '../model/Model';
 import Patient from '../model/Patient';
 import CrudController from './CrudController';
@@ -27,15 +26,6 @@ class PatientController extends CrudController {
           total: patients.length,
           data: patients,
         });
-
-      // return res
-      //   .status(200)
-      //   .json(<ResponseSuccessfully>{
-      //     isSuccess: true,
-      //     message: 'Show all patients',
-      //     total: patients.length,
-      //     data: patients,
-      //   });
 
     } catch (err) {
       console.error(err);

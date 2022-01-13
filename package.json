@@ -7,7 +7,7 @@
     "watch": "ts-node src/app.ts",
     "start": "nodemon",
     "build": "tsc -p .",
-    "migrate:fresh": "ts-node src/utils/truncateTable.ts"
+    "migrate:fresh": "ts-node src/migrations/truncate.ts"
   },
   "repository": {
     "type": "git",
