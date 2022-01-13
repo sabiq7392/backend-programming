@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "ts-node src/app.ts",
     "start": "nodemon",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "migrate:fresh": "ts-node src/utils/truncateTable.ts"
   },
   "repository": {
     "type": "git",

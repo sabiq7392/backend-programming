@@ -23,9 +23,7 @@ export interface Find {
   [key: string]: any;
 }
 
-/**
- * @desc for method _query
- */
+/** @desc for method _query */
 interface Query {
   sql: string,
   values?: any,
@@ -34,7 +32,7 @@ interface Query {
 
 export default class Model {
   /**
-   *
+   * @table
    * @IMPORTANT
    * @desc Make too in your custom model and
    * @set the value based on your table name
@@ -57,7 +55,7 @@ export default class Model {
   }
 
   /**
-   *
+   * @find
    * @desc search "all data" in database based by your "key" and "value" ,
    * @param data send as request
    * @example call in controllers "await Patient.find({ nama: 'Sabiq' })
@@ -74,7 +72,7 @@ export default class Model {
   }
 
   /**
-   *
+   * @findOne
    * @desc search "one data" in database based by your "key" and "value"
    * @param data send as request
    * @example call in controllers "or await Patient.findOne({ id: 1 })"
@@ -91,7 +89,7 @@ export default class Model {
   }
 
   /**
-   *
+   * @create
    * @desc create data in database based by request
    * @param data send as request
    * @example call in controllers "await Patient.create(req.body)"
@@ -108,7 +106,7 @@ export default class Model {
   }
 
   /**
-   *
+   * @update
    * @desc update data in database wheter it send partials or all
    * @param id data id
    * @param data send as request
@@ -126,7 +124,7 @@ export default class Model {
   }
 
   /**
-   *
+   * @delete
    * @desc delete data in database
    * @param id is data id
    * @param data send as request
@@ -141,7 +139,7 @@ export default class Model {
   }
 
   /**
-   *
+   * @_query
    * @desc shortcut for promise and db.query it make less redundant code
    * @condition Why there is a condition result.length || 0?
    *

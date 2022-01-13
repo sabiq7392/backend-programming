@@ -1,34 +1,63 @@
 import express, { Request, Response } from 'express';
+import { validateAuth, validatePost, validatePut } from '../middleware/Validate';
+import Token from '../middleware/VerifyToken';
 import authController from '../controllers/AuthController';
 import patientController from '../controllers/PatientController';
-import { ValidatePost, ValidatePut } from '../middleware/Validate';
+import userController from '../controllers/UserController';
+import db from '../config/database';
 
 const Router = express.Router();
 
+/**
+ * @root
+ */
 Router.route('/')
   .get((req: Request, res: Response) => res.send('Covid Patients API - Author Sabiq'));
 
-// Authentication
+/**
+ * @register
+ */
 Router.route('/auth/register')
-  .post(authController.register);
+  .post(validateAuth, authController.register);
 
 Router.route('/auth/login')
-  .post(authController.login);
+  .post(validateAuth, authController.login);
 
-// Patients
+/**
+ * @users
+ */
+Router.route('/users')
+  .get(userController.index);
+
+Router.route('/users/:id')
+  .get()
+  .put()
+  .delete();
+
+/**
+ * @patients
+ */
 Router.route('/patients')
-  .get(patientController.index)
-  .post(ValidatePost, patientController.store);
+  .get(Token.verifiy, patientController.index)
+  .post(Token.verifiy, validatePost, patientController.store);
 
 Router.route('/patients/:id')
-  .get(patientController.show)
-  .put(ValidatePut, patientController.update)
-  .delete(patientController.destroy);
+  .get(Token.verifiy, patientController.show)
+  .put(Token.verifiy, validatePut, patientController.update)
+  .delete(Token.verifiy, patientController.destroy);
 
 Router.route('/patients/search/:name')
-  .get(patientController.searchByName);
+  .get(Token.verifiy, patientController.searchByName);
 
 Router.route('/patients/status/:status')
-  .get(patientController.searchByStatus);
+  .get(Token.verifiy, patientController.searchByStatus);
 
+/**
+ * @truncate
+ */
+
+// Router.route('/truncate')
+//   .get((req: Request, res: Response) => {
+
+//   });
 export default Router;

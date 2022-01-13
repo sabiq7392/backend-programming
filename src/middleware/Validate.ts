@@ -1,57 +1,105 @@
-import { check, ValidationChain } from 'express-validator';
+import { Request, Response, NextFunction } from 'express';
+import { check, validationResult } from 'express-validator';
+import { ResponseFailed } from '../utils/ResponseJson';
 
-export const ValidatePost: ValidationChain[] = [
+const handlerErrors = (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+  const hasError = !errors.isEmpty();
+  if (hasError) {
+    return res
+      .status(422)
+      .json(<ResponseFailed>{
+        isSuccess: false,
+        errors: errors.array(),
+      });
+  }
+
+  return next();
+};
+
+const message = {
+  isString: 'should be string',
+  notEmpty: 'should not be null',
+  isLength: (len: number) => `min length is ${len}`,
+  isDate: 'should be date, ex: 2021-11-02',
+  isIn: 'should positive, recovered, dead',
+};
+
+const { isString, notEmpty, isLength, isDate, isIn } = message;
+
+/**
+ * @POST
+ */
+export const validatePost = [
   check('name')
-    .notEmpty().withMessage('should not be null')
-    .isString().withMessage('should be string'),
+    .notEmpty().withMessage(notEmpty)
+    .isString().withMessage(isString),
 
   check('phone')
-    .notEmpty().withMessage('should not be null')
-    .isLength({ min: 5 }).withMessage('min length is 5')
-    .isString().withMessage('should be string'),
+    .notEmpty().withMessage(notEmpty)
+    .isLength({ min: 5 }).withMessage(isLength(5))
+    .isString().withMessage(isString),
 
   check('address')
-    .notEmpty().withMessage('should not be null')
-    .isString().withMessage('should be string'),
+    .notEmpty().withMessage(notEmpty)
+    .isString().withMessage(isString),
 
   check('status')
-    .notEmpty().withMessage('should not be null')
-    .isString().withMessage('should be string')
-    .isIn(['positive', 'recovered', 'dead']).withMessage('should positive, recovered, dead'),
+    .notEmpty().withMessage(notEmpty)
+    .isString().withMessage(isString)
+    .isIn(['positive', 'recovered', 'dead']).withMessage(isIn),
 
   check('in_date_at')
-    .notEmpty().withMessage('should not be null')
-    .isDate().withMessage('should be date, ex: 2021-11-02'),
+    .notEmpty().withMessage(notEmpty)
+    .isDate().withMessage(isDate),
 
   check('out_date_at')
-    .notEmpty().withMessage('should not be null')
-    .isDate().withMessage('should be date, ex: 2021-11-03'),
+    .notEmpty().withMessage(notEmpty)
+    .isDate().withMessage(isDate),
+  handlerErrors,
 ];
 
-export const ValidatePut = [
+/**
+ * @PUT
+ */
+export const validatePut = [
   check('name')
     .optional()
-    .isString().withMessage('should be string'),
+    .isString().withMessage(isString),
 
   check('phone')
     .optional()
-    .isLength({ min: 3 }).withMessage('min length is 5')
-    .isString().withMessage('should be string'),
+    .isLength({ min: 3 }).withMessage(isLength(3))
+    .isString().withMessage(isString),
 
   check('address')
     .optional()
-    .isString().withMessage('should be string'),
+    .isString().withMessage(isString),
 
   check('status')
     .optional()
-    .isString().withMessage('should be string')
-    .isIn(['positive', 'recovered', 'dead']).withMessage('should positive, recovered, dead'),
+    .isString().withMessage(isString)
+    .isIn(['positive', 'recovered', 'dead']).withMessage(isIn),
 
   check('in_date_at')
     .optional()
-    .isDate().withMessage('should be date, ex: 2021-11-02'),
+    .isDate().withMessage(isDate),
 
   check('out_date_at')
     .optional()
-    .isDate().withMessage('should be date, ex: 2021-11-03'),
+    .isDate().withMessage(isDate),
+  handlerErrors,
+];
+
+/**
+ * @AUTH
+ */
+export const validateAuth = [
+  check('username')
+    .notEmpty().withMessage(notEmpty)
+    .isString().withMessage(isString),
+  check('password')
+    .notEmpty().withMessage(notEmpty)
+    .isString().withMessage(isString),
+  handlerErrors,
 ];

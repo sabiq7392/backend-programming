@@ -31,6 +31,8 @@
 		"no-underscore-dangle": "off",
 		"no-useless-return": "off",
 		"no-console": "off",
-		"object-curly-newline": "off"
+		"no-trailing-spaces": "off",
+		"object-curly-newline": "off",
+		"padded-blocks": "off"
 	}
 }
