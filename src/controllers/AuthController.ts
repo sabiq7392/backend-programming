@@ -54,6 +54,10 @@ class AuthController {
         TOKEN_SECRET as string,
         { expiresIn: TOKEN_EXPIRES_IN as string },
       );
+
+      /** Checking duration for devlopment */
+      console.log(TOKEN_EXPIRES_IN);
+      
       return res
         .header('auth-token', token)
         .status(200)

@@ -8,7 +8,7 @@ class TruncateTable {
     this.processing();
   }
 
-  private async processing() {
+  private async processing(): Promise<void> {
     await this.reset(await this.show());
     process.exit();
   }
