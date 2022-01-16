@@ -11,6 +11,7 @@ export default class Token {
     try {
       /** @token get token */
       const token = req.header('auth-token');
+
       /** @failed send errors */
       const invalidToken = !token;
       if (invalidToken) {
@@ -18,8 +19,10 @@ export default class Token {
       }
   
       /** @verifiedUser verifiy token they use is it valid or no */
-      const verifiedUser = jwt.verify(token, process.env.TOKEN_SECRET as string);
+      const { TOKEN_SECRET } = process.env;
+      const verifiedUser = jwt.verify(token, TOKEN_SECRET as string);
       req.user = verifiedUser;
+
       return next();
   
     } catch (err) {

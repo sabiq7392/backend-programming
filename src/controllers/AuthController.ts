@@ -21,21 +21,21 @@ class AuthController {
   public async login(req: Request, res: Response) {
     try {
       const { username, password } = req.body;
-
-      /** handle if account didn't exist */
       const user = await User.findOne({ username });
 
+      /** handle if account didn't exist */
       const userDidntExist = !user;
       if (userDidntExist) {
-        return res.status(404).json(<ResponseFailed>{
-          isSuccess: false,
-          message: 'Account didnt exist',
-        });
+        return res
+          .status(404)
+          .json(<ResponseFailed>{
+            isSuccess: false,
+            message: 'Account didnt exist',
+          });
       }
 
       /** @match compare password from login and encrypt password in database. */
       const match = await bcrypt.compare(password, user.password);
-
       const notMatch = !match;
       if (notMatch) {
         return res

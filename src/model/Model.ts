@@ -27,7 +27,7 @@ export interface Find {
 interface Query {
   sql: string,
   values?: any,
-  callback: Function,
+  _resolve: Function,
 }
 
 export default class Model {
@@ -50,7 +50,7 @@ export default class Model {
   public static all(): PromiseGet {
     return this._query({
       sql: `SELECT * FROM ${this.table}`,
-      callback: (results: GetResult) => results,
+      _resolve: (results: GetResult) => results,
     });
   }
 
@@ -67,7 +67,7 @@ export default class Model {
 
     return this._query({
       sql: `SELECT * FROM ${this.table} WHERE ${key} = ${`"${value}"` || value}`,
-      callback: (results: GetResult) => results,
+      _resolve: (results: GetResult) => results,
     });
   }
 
@@ -84,7 +84,7 @@ export default class Model {
 
     return this._query({
       sql: `SELECT * FROM ${this.table} WHERE ${key} = ${`"${value}"` || value}`,
-      callback: (result: GetOne) => result[0],
+      _resolve: (result: GetOne) => result[0],
     });
   }
 
@@ -101,7 +101,7 @@ export default class Model {
     return this._query({
       sql: `INSERT INTO ${this.table} SET ?`,
       values: data,
-      callback: (result: PostResult) => this.find({ id: result.insertId }),
+      _resolve: (result: PostResult) => this.findOne({ id: result.insertId }),
     });
   }
 
@@ -119,7 +119,7 @@ export default class Model {
       sql: `UPDATE ${this.table} SET ? WHERE id = ?`,
       values: [data, id],
       // eslint-disable-next-line no-unused-vars
-      callback: (result: PostResult) => this.findOne({ id }),
+      _resolve: (result: PostResult) => this.findOne({ id }),
     });
   }
 
@@ -134,7 +134,7 @@ export default class Model {
   public static delete(id: number): PromisePost {
     return this._query({
       sql: `DELETE FROM ${this.table} WHERE id = ${id}`,
-      callback: (results: PostResult) => results,
+      _resolve: (results: PostResult) => results,
     });
   }
 
@@ -155,7 +155,7 @@ export default class Model {
    * @returns data in database, "truthy" & "falsy" condition, and errors
    */
   private static _query(query: Query): Promise<any> {
-    const { sql, values, callback } = query;
+    const { sql, values, _resolve } = query;
 
     return new Promise((resolve, reject) => {
       db.query(sql, values, (err, results: any) => {
@@ -164,7 +164,7 @@ export default class Model {
         const notFound = results.length === 0;
         if (notFound) resolve(results.length || 0);
 
-        if (results && callback) resolve(callback(results));
+        if (results && _resolve) resolve(_resolve(results));
       });
     });
   }

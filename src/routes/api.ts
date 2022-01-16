@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { validateAuth, validatePost, validatePut } from '../middleware/validate';
-import Token from '../middleware/VerifyToken';
+import Token from '../middleware/VerifiyToken';
 import authController from '../controllers/AuthController';
 import patientController from '../controllers/PatientController';
 import userController from '../controllers/UserController';
@@ -26,12 +26,13 @@ Router.route('/auth/login')
  * @users
  */
 Router.route('/users')
-  .get(userController.index);
+  .get(Token.verifiy, userController.index)
+  .post(Token.verifiy, validateAuth, userController.store);
 
 Router.route('/users/:id')
-  .get()
-  .put()
-  .delete();
+  .get(Token.verifiy, userController.show)
+  .put(Token.verifiy, validateAuth, userController.update)
+  .delete(Token.verifiy, userController.destroy);
 
 /**
  * @patients

@@ -7,8 +7,10 @@
     "watch": "ts-node src/app.ts",
     "start": "nodemon",
     "build": "tsc -p .",
-    "migrate:fresh": "ts-node src/migrations/Truncate.ts",
-    "migrate:create": "ts-node src/migrations/Table.ts"
+    "migrate:create": "ts-node src/migrations/createTables.ts",
+    "migrate:drop": "ts-node src/migrations/dropAllTables.ts",
+    "migrate:fresh": "ts-node src/migrations/truncateAllTables.ts",
+    "migrate:show": "ts-node src/migrations/showAllTables.ts"
   },
   "repository": {
     "type": "git",
